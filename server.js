@@ -15,10 +15,6 @@ app.use(routes);
 
 // const models = require("./models");
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
-});
-
 // set force to true for the time you want to make the database, then set it to false
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => console.log(`App listening on port ${PORT}!`));
