@@ -27,9 +27,31 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
-  // find one category by its `id` value
-  // be sure to include its associated Products
+// find one category by its `id` value
+// be sure to include its associated Products
+router.get("/:id", async (req, res) => {
+  try {
+    const dbCategoryData = await Category.findOne({
+      where: {
+        id: req.params.id,
+      },
+      include: [
+        {
+          model: Product,
+          attributes: ["id", "product_name", "price", "inStock"],
+        },
+      ],
+    });
+
+    if (!dbCategoryData) {
+      res.status(404).json({ message: "User not found!" });
+    } else {
+      res.json(dbCategoryData);
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 router.post("/", (req, res) => {
