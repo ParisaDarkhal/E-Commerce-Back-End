@@ -41,6 +41,8 @@ Product.init(
         model: "category",
         key: "id",
       },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
     },
   },
   {
