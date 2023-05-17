@@ -36,9 +36,39 @@ router.get("/", async (req, res) => {
 });
 
 // get one product
+// find a single product by its `id`
+// be sure to include its associated Category and Tag data
+// localhost:3001/api/products/id
 router.get("/:id", (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+  Product.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [
+      {
+        model: Category,
+        attributes: ["id", "Category_name"],
+      },
+      {
+        model: Tag,
+        attributes: ["id", "tag_name"],
+        through: ProductTag,
+        as: "product_tags",
+      },
+    ],
+  })
+    .then((dbProductData) => {
+      if (!dbProductData) {
+        res.status(404).json({ message: "Product not found!" });
+        return;
+      } else {
+        res.status(200).json(dbProductData);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 // create new product
