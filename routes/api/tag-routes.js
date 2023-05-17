@@ -4,7 +4,7 @@ const { Tag, Product, ProductTag } = require("../../models");
 // The `/api/tags` endpoint
 
 // find all tags and be sure to include its associated Product data
-// localhot:3001/tags
+// localhot:3001/api/tags
 router.get("/", async (req, res) => {
   try {
     const dbTagData = await Tag.findAll({
@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 });
 
 // find a single tag by its `id` and be sure to include its associated Product data
-// localhot:3001/tags/:id
+// localhot:3001/api/tags/:id
 router.get("/:id", async (req, res) => {
   try {
     const dbTagData = await Tag.findOne({
@@ -60,8 +60,19 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// create a new tag
+// localhost:3001/api/tags
 router.post("/", (req, res) => {
-  // create a new tag
+  Tag.create({
+    tag_name: req.body.tag_name,
+  })
+    .then((dbTagData) => {
+      res.json(dbTagData);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 router.put("/:id", (req, res) => {
