@@ -75,8 +75,27 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
-  // update a tag's name by its `id` value
+// update a tag's name by its `id` value
+// localhost:3001/api/tags/:id
+router.put("/:id", async (req, res) => {
+  try {
+    const [numRowsAffected, dbTagData] = await Tag.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+      returning: true, // This ensures that the updated data is returned
+    });
+
+    if (numRowsAffected === 0) {
+      res.status(404).json({ message: "Tag not found!" });
+      return;
+    }
+
+    res.json(dbTagData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 router.delete("/:id", (req, res) => {
