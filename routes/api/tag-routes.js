@@ -62,17 +62,17 @@ router.get("/:id", async (req, res) => {
 
 // create a new tag
 // localhost:3001/api/tags
-router.post("/", (req, res) => {
-  Tag.create({
-    tag_name: req.body.tag_name,
-  })
-    .then((dbTagData) => {
-      res.json(dbTagData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
+router.post("/", async (req, res) => {
+  try {
+    const dbTagData = await Tag.create({
+      tag_name: req.body.tag_name,
     });
+
+    res.json(dbTagData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 router.put("/:id", (req, res) => {
