@@ -39,36 +39,36 @@ router.get("/", async (req, res) => {
 // find a single product by its `id`
 // be sure to include its associated Category and Tag data
 // localhost:3001/api/products/id
-router.get("/:id", (req, res) => {
-  Product.findOne({
-    where: {
-      id: req.params.id,
-    },
-    include: [
-      {
-        model: Category,
-        attributes: ["id", "Category_name"],
+router.get("/:id", async (req, res) => {
+  try {
+    const dbProductData = await Product.findOne({
+      where: {
+        id: req.params.id,
       },
-      {
-        model: Tag,
-        attributes: ["id", "tag_name"],
-        through: ProductTag,
-        as: "product_tags",
-      },
-    ],
-  })
-    .then((dbProductData) => {
-      if (!dbProductData) {
-        res.status(404).json({ message: "Product not found!" });
-        return;
-      } else {
-        res.status(200).json(dbProductData);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
+      include: [
+        {
+          model: Category,
+          attributes: ["id", "category_name"],
+        },
+        {
+          model: Tag,
+          attributes: ["id", "tag_name"],
+          through: ProductTag,
+          as: "product_tags",
+        },
+      ],
     });
+
+    if (!dbProductData) {
+      res.status(404).json({ message: "Product not found!" });
+      return;
+    }
+
+    res.status(200).json(dbProductData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 // create new product
@@ -145,8 +145,26 @@ router.put("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
-  // delete one product by its `id` value
+// delete one product by its `id` value
+// localhost:3001/api/category/:id
+router.delete("/:id", async (req, res) => {
+  try {
+    const numRowsAffected = await Product.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (numRowsAffected === 0) {
+      res.status(404).json({ message: "Product not found!" });
+      return;
+    }
+
+    res.status(200).json({ message: "Product deleted successfully." });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;
